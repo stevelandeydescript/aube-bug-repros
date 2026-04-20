@@ -1,0 +1,8 @@
+{
+    "name": "aube-bug-platform-deps",
+    "private": true,
+    "version": "1.0.0",
+    "dependencies": {
+        "esbuild": "0.25.9"
+    }
+}

@@ -1,0 +1,90 @@
+name: "Repro: pnpm-lock.yaml host-only platform deps"
+on: [push, workflow_dispatch]
+
+jobs:
+  generate-lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install aube
+        run: npm install -g aube@1.0.0-beta.9
+
+      - name: Generate lockfile on Linux
+        working-directory: pnpm-lockfile-host-only-platforms
+        run: aube install
+
+      - name: Show platform entries in lockfile
+        working-directory: pnpm-lockfile-host-only-platforms
+        run: |
+          echo "=== @esbuild platform packages in lockfile ==="
+          LOCKFILE=$(ls pnpm-lock.yaml aube-lock.yaml 2>/dev/null | head -1)
+          grep '@esbuild/' "$LOCKFILE" | grep -v '#' | sort -u
+          echo ""
+          echo "Expected: entries for darwin-arm64, darwin-x64, linux-x64, win32-x64, etc."
+          echo "Actual: only linux-x64 entries (if pnpm-lock.yaml)"
+
+      - name: Upload lockfile for cross-platform test
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-lockfile
+          path: |
+            pnpm-lockfile-host-only-platforms/pnpm-lock.yaml
+            pnpm-lockfile-host-only-platforms/aube-lock.yaml
+
+  install-on-macos:
+    needs: generate-lockfile
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install aube
+        run: npm install -g aube@1.0.0-beta.9
+
+      - name: Download lockfile generated on Linux
+        uses: actions/download-artifact@v4
+        with:
+          name: generated-lockfile
+          path: pnpm-lockfile-host-only-platforms/
+
+      - name: "Install from Linux-generated lockfile on macOS"
+        working-directory: pnpm-lockfile-host-only-platforms
+        run: aube install --frozen-lockfile || echo "FAILED: --frozen-lockfile rejected the lockfile"
+
+      - name: "Check if esbuild works"
+        working-directory: pnpm-lockfile-host-only-platforms
+        run: |
+          echo "=== esbuild --version ==="
+          npx esbuild --version || echo "FAILED: esbuild binary not found (missing darwin-arm64 optional dep)"
+
+  pnpm-comparison:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10
+
+      - name: Generate lockfile with pnpm
+        working-directory: pnpm-lockfile-host-only-platforms
+        run: pnpm install
+
+      - name: Show platform entries (pnpm - correct behavior)
+        working-directory: pnpm-lockfile-host-only-platforms
+        run: |
+          echo "=== @esbuild platform packages in pnpm-lock.yaml ==="
+          grep '@esbuild/' pnpm-lock.yaml | grep -v '#' | sort -u
+          echo ""
+          echo "pnpm includes ALL platforms in the lockfile"
