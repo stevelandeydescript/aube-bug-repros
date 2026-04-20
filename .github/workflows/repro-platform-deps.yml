@@ -14,21 +14,18 @@ jobs:
       - name: Install aube
         run: npm install -g @endevco/aube@1.0.0-beta.9
 
-      - name: Generate lockfile on Linux
+      - name: Regenerate pnpm-lock.yaml with aube on Linux
         working-directory: pnpm-lockfile-host-only-platforms
-        run: aube install
+        run: aube install --no-frozen-lockfile
 
-      - name: Assert lockfile has darwin-arm64 entries
+      - name: Assert pnpm-lock.yaml has darwin-arm64 entries
         working-directory: pnpm-lockfile-host-only-platforms
         run: |
-          LOCKFILE=$(ls pnpm-lock.yaml aube-lock.yaml 2>/dev/null | head -1)
-          echo "Lockfile: $LOCKFILE"
+          echo "=== @esbuild platform packages in pnpm-lock.yaml ==="
+          grep '@esbuild/' pnpm-lock.yaml | grep -v '#' | sort -u
           echo ""
-          echo "=== @esbuild platform packages ==="
-          grep '@esbuild/' "$LOCKFILE" | grep -v '#' | sort -u
-          echo ""
-          if ! grep -q '@esbuild/darwin-arm64' "$LOCKFILE"; then
-            echo "FAIL: lockfile is missing @esbuild/darwin-arm64"
+          if ! grep -q '@esbuild/darwin-arm64' pnpm-lock.yaml; then
+            echo "FAIL: pnpm-lock.yaml is missing @esbuild/darwin-arm64"
             echo "A macOS developer using this lockfile will not get esbuild's native binary."
             exit 1
           fi
@@ -37,10 +34,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: generated-lockfile
-          path: |
-            pnpm-lockfile-host-only-platforms/pnpm-lock.yaml
-            pnpm-lockfile-host-only-platforms/aube-lock.yaml
+          name: aube-generated-lockfile
+          path: pnpm-lockfile-host-only-platforms/pnpm-lock.yaml
 
   install-on-macos:
     needs: generate-on-linux-install-on-macos
@@ -56,10 +51,10 @@ jobs:
       - name: Install aube
         run: npm install -g @endevco/aube@1.0.0-beta.9
 
-      - name: Download lockfile generated on Linux
+      - name: Replace lockfile with Linux-generated one
         uses: actions/download-artifact@v4
         with:
-          name: generated-lockfile
+          name: aube-generated-lockfile
           path: pnpm-lockfile-host-only-platforms/
 
       - name: Install from Linux-generated lockfile on macOS
@@ -82,14 +77,14 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm@10
 
-      - name: Generate lockfile with pnpm
+      - name: Regenerate pnpm-lock.yaml with pnpm on Linux
         working-directory: pnpm-lockfile-host-only-platforms
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile
 
-      - name: Assert lockfile has darwin-arm64 entries
+      - name: Assert pnpm-lock.yaml has darwin-arm64 entries
         working-directory: pnpm-lockfile-host-only-platforms
         run: |
-          echo "=== @esbuild platform packages ==="
+          echo "=== @esbuild platform packages in pnpm-lock.yaml ==="
           grep '@esbuild/' pnpm-lock.yaml | grep -v '#' | sort -u
           echo ""
           if ! grep -q '@esbuild/darwin-arm64' pnpm-lock.yaml; then
