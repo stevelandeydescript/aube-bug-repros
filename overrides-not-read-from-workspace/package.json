@@ -1,0 +1,8 @@
+{
+    "name": "aube-bug-overrides-workspace",
+    "private": true,
+    "version": "1.0.0",
+    "dependencies": {
+        "semver": "^7.5.0"
+    }
+}
