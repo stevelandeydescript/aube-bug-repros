@@ -9,7 +9,7 @@ Tested with aube 1.0.0-beta.9.
 
 1. **`alias-override-conflict/`** — `npm:` alias replaced by an unrelated `pnpm.overrides` entry.
    The override range doesn't even match the alias target's version, but aube applies it anyway.
-   This is the blocking bug preventing the migration.
+   Couldn't find a workaround for this so it blocks my migration.
 
 2. **`overrides-not-read-from-workspace/`** — aube does not read `overrides` from
    `pnpm-workspace.yaml`. pnpm v10 supports this; aube ignores it. Symptom: `--frozen-lockfile`
