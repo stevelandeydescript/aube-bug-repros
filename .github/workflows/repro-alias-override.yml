@@ -2,7 +2,7 @@ name: 'Repro: npm: alias + override conflict'
 on: [push, workflow_dispatch]
 
 jobs:
-  repro:
+  aube:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
@@ -17,32 +17,51 @@ jobs:
       - name: Install aube
         run: npm install -g @endevco/aube@1.0.0-beta.9
 
-      - name: Install pnpm (for comparison)
-        run: npm install -g pnpm@10
-
-      - name: 'aube install'
+      - name: aube install
         working-directory: alias-override-conflict
         run: aube install
 
-      - name: 'aube result (EXPECTED: @descript/immer 6.0.9-patched.1)'
+      - name: Assert immer is @descript/immer@6.0.9-patched.1
         working-directory: alias-override-conflict
         run: |
-          echo "=== Installed package ==="
-          node -e "const p = require('./node_modules/immer/package.json'); console.log(p.name, p.version)"
+          NAME=$(node -e "console.log(require('./node_modules/immer/package.json').name)")
+          VERSION=$(node -e "console.log(require('./node_modules/immer/package.json').version)")
+          echo "Installed: $NAME@$VERSION"
           echo ""
-          echo "=== Lockfile specifier ==="
-          grep -A2 'immer:' aube-lock.yaml || grep -A2 'immer:' pnpm-lock.yaml || echo "no lockfile found"
+          echo "Lockfile entry:"
+          grep -A2 'immer:' aube-lock.yaml || grep -A2 'immer:' pnpm-lock.yaml || true
+          echo ""
+          if [ "$NAME" != "@descript/immer" ] || [ "$VERSION" != "6.0.9-patched.1" ]; then
+            echo "FAIL: expected @descript/immer@6.0.9-patched.1, got $NAME@$VERSION"
+            exit 1
+          fi
 
-      - name: Clean for pnpm comparison
-        working-directory: alias-override-conflict
-        run: rm -rf node_modules aube-lock.yaml pnpm-lock.yaml
+  pnpm:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: 'pnpm install (for comparison)'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10
+
+      - name: pnpm install
         working-directory: alias-override-conflict
         run: pnpm install
 
-      - name: 'pnpm result (correct behavior)'
+      - name: Assert immer is @descript/immer@6.0.9-patched.1
         working-directory: alias-override-conflict
         run: |
-          echo "=== Installed package ==="
-          node -e "const p = require('./node_modules/immer/package.json'); console.log(p.name, p.version)"
+          NAME=$(node -e "console.log(require('./node_modules/immer/package.json').name)")
+          VERSION=$(node -e "console.log(require('./node_modules/immer/package.json').version)")
+          echo "Installed: $NAME@$VERSION"
+          if [ "$NAME" != "@descript/immer" ] || [ "$VERSION" != "6.0.9-patched.1" ]; then
+            echo "FAIL: expected @descript/immer@6.0.9-patched.1, got $NAME@$VERSION"
+            exit 1
+          fi

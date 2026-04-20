@@ -2,7 +2,7 @@ name: 'Repro: pnpm-lock.yaml host-only platform deps'
 on: [push, workflow_dispatch]
 
 jobs:
-  generate-lockfile:
+  generate-on-linux-install-on-macos:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,17 +18,23 @@ jobs:
         working-directory: pnpm-lockfile-host-only-platforms
         run: aube install
 
-      - name: Show platform entries in lockfile
+      - name: Assert lockfile has darwin-arm64 entries
         working-directory: pnpm-lockfile-host-only-platforms
         run: |
-          echo "=== @esbuild platform packages in lockfile ==="
           LOCKFILE=$(ls pnpm-lock.yaml aube-lock.yaml 2>/dev/null | head -1)
+          echo "Lockfile: $LOCKFILE"
+          echo ""
+          echo "=== @esbuild platform packages ==="
           grep '@esbuild/' "$LOCKFILE" | grep -v '#' | sort -u
           echo ""
-          echo "Expected: entries for darwin-arm64, darwin-x64, linux-x64, win32-x64, etc."
-          echo "Actual: only linux-x64 entries (if pnpm-lock.yaml)"
+          if ! grep -q '@esbuild/darwin-arm64' "$LOCKFILE"; then
+            echo "FAIL: lockfile is missing @esbuild/darwin-arm64"
+            echo "A macOS developer using this lockfile will not get esbuild's native binary."
+            exit 1
+          fi
 
       - name: Upload lockfile for cross-platform test
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: generated-lockfile
@@ -37,7 +43,8 @@ jobs:
             pnpm-lockfile-host-only-platforms/aube-lock.yaml
 
   install-on-macos:
-    needs: generate-lockfile
+    needs: generate-on-linux-install-on-macos
+    if: always()
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,16 +62,13 @@ jobs:
           name: generated-lockfile
           path: pnpm-lockfile-host-only-platforms/
 
-      - name: 'Install from Linux-generated lockfile on macOS'
+      - name: Install from Linux-generated lockfile on macOS
         working-directory: pnpm-lockfile-host-only-platforms
-        run: |
-          aube install --frozen-lockfile || echo "FAILED: --frozen-lockfile rejected the lockfile"
+        run: aube install --frozen-lockfile
 
-      - name: 'Check if esbuild works'
+      - name: Assert esbuild works
         working-directory: pnpm-lockfile-host-only-platforms
-        run: |
-          echo "=== esbuild --version ==="
-          npx esbuild --version || echo "FAILED: esbuild binary not found (missing darwin-arm64 optional dep)"
+        run: npx esbuild --version
 
   pnpm-comparison:
     runs-on: ubuntu-latest
@@ -82,10 +86,14 @@ jobs:
         working-directory: pnpm-lockfile-host-only-platforms
         run: pnpm install
 
-      - name: Show platform entries (pnpm - correct behavior)
+      - name: Assert lockfile has darwin-arm64 entries
         working-directory: pnpm-lockfile-host-only-platforms
         run: |
-          echo "=== @esbuild platform packages in pnpm-lock.yaml ==="
+          echo "=== @esbuild platform packages ==="
           grep '@esbuild/' pnpm-lock.yaml | grep -v '#' | sort -u
           echo ""
-          echo "pnpm includes ALL platforms in the lockfile"
+          if ! grep -q '@esbuild/darwin-arm64' pnpm-lock.yaml; then
+            echo "FAIL: pnpm lockfile missing darwin-arm64 (unexpected)"
+            exit 1
+          fi
+          echo "PASS: pnpm includes all platforms"
