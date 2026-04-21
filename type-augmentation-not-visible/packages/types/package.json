@@ -1,0 +1,12 @@
+{
+    "name": "@repro/types",
+    "version": "0.0.0",
+    "private": true,
+    "types": "src/augment.d.ts",
+    "dependencies": {
+        "@hapi/hapi": "^20.3.0"
+    },
+    "devDependencies": {
+        "typescript": "^5.4.0"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "name": "@repro/lib-new",
+    "private": true,
+    "version": "1.0.0",
+    "dependencies": {
+        "@repro/lib-old": "workspace:*",
+        "openai": "^6.0.0"
+    },
+    "devDependencies": {
+        "typescript": "~5.7.0"
+    }
+}
