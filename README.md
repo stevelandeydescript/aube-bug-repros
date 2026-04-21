@@ -25,3 +25,17 @@ as a regression test.
    it only includes optional dependency entries for the host platform. pnpm includes
    all platforms. A lockfile generated on Linux lacks macOS/Windows native binaries,
    breaking `--frozen-lockfile` and tools like esbuild on other platforms.
+
+## Observations (not yet reproduced minimally)
+
+**Transitive dependency version drift during re-resolution.** When aube re-resolves a
+lockfile (e.g. because overrides changed), it picks newer versions of transitive dependencies
+than pnpm had pinned. In our monorepo this causes TypeScript type errors because newer versions
+of `@types/hapi__shot` (deprecated empty stub vs working 4.1.0), `ms` (template literal
+`StringValue` type vs plain string), `@react-aria/virtualizer` (renamed export), and
+`hls-parser` (changed type signatures) are resolved.
+
+pnpm's incremental lockfile preserves older pinned versions. aube resolves fresh, getting
+the latest matching versions. This is technically correct behavior but causes friction for
+migrations since the lockfile can't be ported as-is. Workaround: pin affected transitive
+dependencies via `overrides` or `catalog`.
