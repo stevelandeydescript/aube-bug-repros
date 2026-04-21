@@ -5,7 +5,6 @@
         "module": "ES2022",
         "moduleResolution": "bundler",
         "skipLibCheck": false,
-        "noEmit": true,
         "declaration": true,
         "composite": true,
         "outDir": "dist"
