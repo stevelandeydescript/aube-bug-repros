@@ -1,0 +1,9 @@
+{
+    "name": "aube-bug-filter-root-deps",
+    "private": true,
+    "version": "1.0.0",
+    "devDependencies": {
+        "esbuild-register": "^3.6.0",
+        "esbuild": "0.25.9"
+    }
+}
