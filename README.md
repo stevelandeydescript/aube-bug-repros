@@ -5,14 +5,16 @@ Each directory is self-contained: `cd` into it and run the commands in its READM
 
 GitHub Actions workflows run each repro on push, comparing aube's behavior against pnpm.
 
-Tested with aube 1.0.0-beta.10.
+## Fixed in beta.10
 
-## Bugs
+Bug 1 (`alias-override-conflict/`) was fixed in beta.10. The repro and CI workflow remain
+as a regression test.
 
-1. **`alias-override-conflict/`** — When a dependency uses an `npm:` alias
-   (e.g. `"immer": "npm:@other-pkg/immer@6.0.9"`), aube incorrectly applies
-   a version-range override meant for the unaliased package. The override range
-   doesn't even match the alias target's version, but aube replaces it anyway.
+## Bugs (as of beta.10)
+
+1. **`alias-override-conflict/`** — _Fixed in beta.10._ When a dependency uses an `npm:` alias
+   (e.g. `"immer": "npm:@other-pkg/immer@6.0.9"`), aube incorrectly applies a version-range
+   override meant for the unaliased package. The CI workflow now passes on beta.10+.
 
 2. **`overrides-not-read-from-workspace/`** — aube does not read `overrides` from
    `pnpm-workspace.yaml`. pnpm v10 supports this; aube ignores it. Symptom:
