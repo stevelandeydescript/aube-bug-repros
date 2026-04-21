@@ -5,7 +5,7 @@ Each directory is self-contained: `cd` into it and run the commands in its READM
 
 GitHub Actions workflows run each repro on push, comparing aube's behavior against pnpm.
 
-Tested with aube 1.0.0-beta.9.
+Tested with aube 1.0.0-beta.10.
 
 ## Bugs
 
@@ -23,3 +23,8 @@ Tested with aube 1.0.0-beta.9.
    it only includes optional dependency entries for the host platform. pnpm includes
    all platforms. A lockfile generated on Linux lacks macOS/Windows native binaries,
    breaking `--frozen-lockfile` and tools like esbuild on other platforms.
+
+4. **`types-not-resolvable/`** — `@types/*` packages installed via aube's virtual
+   store symlinks are not resolvable by TypeScript. The symlink exists and points to
+   the correct files, but TypeScript can't follow it. This causes type errors for any
+   package that relies on DefinitelyTyped types (e.g. `@hapi/hapi` + `@types/hapi__hapi`).

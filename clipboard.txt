@@ -1,0 +1,9 @@
+On the correctness side, I found two bugs with minimal reproductions and CI runs that demonstrate each one:
+
+1. **npm: alias + override conflict.** When a dependency uses an `npm:` alias (e.g. `"immer": "npm:@descript/immer@6.0.9-patched.1"`), aube incorrectly applies a version-range override meant for the unaliased package. The override `immer@>=7.0.0 <9.0.6` should not match `@descript/immer@6.0.9-patched.1` (different package, version outside range), but aube replaces the alias target with `immer@11.1.4`. pnpm handles this correctly. ([CI run](https://github.com/stevelandeydescript/aube-bug-repros/actions/runs/24679437671) — aube jobs fail, pnpm jobs pass)
+
+2. **pnpm-lock.yaml only records host-platform optional deps.** When aube generates or updates `pnpm-lock.yaml`, it only includes optional dependency entries for the current platform. pnpm includes all platforms. A lockfile generated on Linux is missing `@esbuild/darwin-arm64`, `@oxlint/binding-darwin-arm64`, etc., so macOS developers get "Cannot find native binding" errors. ([CI run](https://github.com/stevelandeydescript/aube-bug-repros/actions/runs/24679437641) — aube's lockfile fails the darwin-arm64 assertion; the macOS install-from-Linux job fails at `npx esbuild --version`; pnpm comparison passes)
+
+Repro repo with self-contained test cases for all three bugs: https://github.com/stevelandeydescript/aube-bug-repros
+
+Bug 1 is the harder blocker — we use `npm:` aliases for patched forks of several packages. Bug 2 can be worked around by using pnpm to generate the lockfile and aube to install from it, but only if bug 1 is fixed (since the linker also ignores the alias).

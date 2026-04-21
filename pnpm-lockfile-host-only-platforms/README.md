@@ -65,5 +65,5 @@ and installs from a pnpm-generated cross-platform lockfile.
 
 ## Versions
 
-- aube 1.0.0-beta.9
+- aube 1.0.0-beta.10
 - pnpm 10.33.0 (generates cross-platform lockfiles)

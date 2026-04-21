@@ -30,5 +30,5 @@ Duplicate overrides into `package.json` under `"pnpm": { "overrides": { ... } }`
 
 ## Versions
 
-- aube 1.0.0-beta.9
+- aube 1.0.0-beta.10
 - pnpm 10.33.0 (reads overrides from pnpm-workspace.yaml correctly)
