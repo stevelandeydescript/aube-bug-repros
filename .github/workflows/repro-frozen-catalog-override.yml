@@ -1,0 +1,45 @@
+name: "Repro: --frozen-lockfile rejects catalog: in overrides"
+on: [push, workflow_dispatch]
+
+jobs:
+  aube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install pnpm and aube
+        run: |
+          npm install -g pnpm@10
+          npm install -g @endevco/aube@1.0.0-beta.12
+
+      - name: Generate lockfile with pnpm
+        working-directory: frozen-lockfile-catalog-override
+        run: pnpm install
+
+      - name: aube --frozen-lockfile should pass
+        working-directory: frozen-lockfile-catalog-override
+        run: |
+          rm -rf node_modules
+          aube install --frozen-lockfile
+
+  pnpm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10
+
+      - name: pnpm install + frozen-lockfile
+        working-directory: frozen-lockfile-catalog-override
+        run: |
+          pnpm install
+          pnpm install --frozen-lockfile

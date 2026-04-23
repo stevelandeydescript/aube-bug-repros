@@ -1,0 +1,8 @@
+{
+    "name": "aube-bug-frozen-catalog-override",
+    "private": true,
+    "version": "1.0.0",
+    "dependencies": {
+        "lodash": "^4.17.0"
+    }
+}
