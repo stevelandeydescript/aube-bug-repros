@@ -15,7 +15,7 @@ jobs:
           node-version: '22'
 
       - name: Install aube
-        run: npm install -g @endevco/aube@1.0.0-beta.10
+        run: npm install -g @endevco/aube@1.0.0-beta.12
 
       - name: 'aube install --filter @repro/app...'
         working-directory: filter-skips-root-deps
