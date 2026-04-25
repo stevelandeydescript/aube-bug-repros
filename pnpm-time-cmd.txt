@@ -1,0 +1,1 @@
+rm -rf node_modules && time pnpm install --frozen-lockfile 2>&1 | tail -5
