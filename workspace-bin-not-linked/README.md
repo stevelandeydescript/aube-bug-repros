@@ -37,5 +37,5 @@ and `lint-js` bins from `@descript/js-dev` are used by ~100 packages.
 
 ## Versions
 
-- aube 1.0.0-1.2.1
+- aube 1.2.1
 - pnpm 10.33.0 (works correctly)
