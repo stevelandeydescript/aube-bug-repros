@@ -1,0 +1,43 @@
+name: 'Repro: workspace package bins not linked'
+on: [push, workflow_dispatch]
+
+jobs:
+  aube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install aube
+        run: npm install -g @endevco/aube@1.0.0-beta.12
+
+      - name: aube install
+        working-directory: workspace-bin-not-linked
+        run: aube install
+
+      - name: Workspace bin should be linked
+        working-directory: workspace-bin-not-linked
+        run: bash test.sh
+
+  pnpm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10
+
+      - name: pnpm install
+        working-directory: workspace-bin-not-linked
+        run: pnpm install
+
+      - name: Workspace bin should be linked
+        working-directory: workspace-bin-not-linked
+        run: bash test.sh
