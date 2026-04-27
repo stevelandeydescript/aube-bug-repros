@@ -1,0 +1,45 @@
+name: 'Repro: --frozen-lockfile rejects override-changed specifiers'
+on: [push, workflow_dispatch]
+
+jobs:
+  aube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pnpm and aube
+        run: |
+          npm install -g pnpm@10
+          npm install -g @endevco/aube@1.2.1
+
+      - name: Generate lockfile with pnpm
+        working-directory: frozen-lockfile-override-specifier
+        run: pnpm install
+
+      - name: aube --frozen-lockfile should pass
+        working-directory: frozen-lockfile-override-specifier
+        run: |
+          rm -rf node_modules packages/app/node_modules
+          aube install --frozen-lockfile
+
+  pnpm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10
+
+      - name: pnpm install + frozen-lockfile
+        working-directory: frozen-lockfile-override-specifier
+        run: |
+          pnpm install
+          pnpm install --frozen-lockfile

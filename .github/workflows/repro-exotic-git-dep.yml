@@ -1,0 +1,43 @@
+name: 'Repro: git URL deps fail to resolve'
+on: [push, workflow_dispatch]
+
+jobs:
+  aube:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install aube
+        run: npm install -g @endevco/aube@1.2.1
+
+      - name: aube install
+        working-directory: exotic-git-dep-resolution
+        run: aube install
+
+      - name: Package should be installed
+        working-directory: exotic-git-dep-resolution
+        run: bash test.sh
+
+  pnpm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pnpm
+        run: npm install -g pnpm@10
+
+      - name: pnpm install
+        working-directory: exotic-git-dep-resolution
+        run: pnpm install
+
+      - name: Package should be installed
+        working-directory: exotic-git-dep-resolution
+        run: bash test.sh
