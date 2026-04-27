@@ -1,0 +1,1 @@
+{"name":"@test/dev","version":"1.0.0","bin":{"my-tool":"./bin/my-tool.mjs"}}
