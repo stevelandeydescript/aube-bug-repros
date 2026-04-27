@@ -1,6 +1,6 @@
 # aube bug reproductions
 
-Minimal test cases for bugs found migrating a 4,000+ package monorepo from pnpm to aube. Each directory is self-contained with a README explaining the bug, reproduction steps, and expected vs actual behavior.
+Minimal test cases for bugs found migrating a large monorepo from pnpm to aube. Each directory is self-contained with a README explaining the bug, reproduction steps, and expected vs actual behavior.
 
 GitHub Actions workflows compare aube against pnpm for each repro.
 
@@ -20,12 +20,10 @@ GitHub Actions workflows compare aube against pnpm for each repro.
 
 When workspace package A declares `"bin": {"my-tool": ...}` and package B depends on A via `workspace:*`, pnpm links `my-tool` into `B/node_modules/.bin/`. aube does not.
 
-This blocks any monorepo that runs shared tooling bins (like `clean-js`, `fmt-js`, `lint-js`) across workspace packages.
-
 ### 7. `frozen-lockfile-override-specifier/` — overrides not applied before specifier comparison
 
-When an override rewrites a dependency specifier (e.g. `plist@<3.0.5` → `>=3.0.5`), pnpm records the override target in the lockfile and `--frozen-lockfile` accepts it. aube compares the original manifest specifier against the lockfile and fails. This affects all security overrides that pin vulnerable transitive deps to safe versions.
+When an override rewrites a dependency specifier (e.g. `plist@<3.0.5` → `>=3.0.5`), pnpm records the override target in the lockfile and `--frozen-lockfile` accepts it. aube compares the original manifest specifier against the lockfile and fails.
 
 ### 8. `exotic-git-dep-resolution/` — git URL deps blocked by default
 
-`@electron/rebuild` depends on `@electron/node-gyp` via a git URL. aube blocks it with `blockExoticSubdeps` (enabled by default). Workaround: `block-exotic-subdeps=false` in `.npmrc`. This is a configuration gap rather than a correctness bug — but the default differs from pnpm, which resolves git deps without extra config.
+`@electron/rebuild` depends on `@electron/node-gyp` via a git URL. aube blocks it with `blockExoticSubdeps` (enabled by default). Workaround: `block-exotic-subdeps=false` in `.npmrc`. The default differs from pnpm, which resolves git deps without extra config.
