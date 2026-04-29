@@ -1,44 +1,53 @@
-# Bug: patch application fails on valid pnpm patch
+# Bug: aube cannot apply its own patches
 
 ## Summary
 
-A pnpm-generated patch for `gifuct-js@2.1.2` applies correctly with pnpm but
-fails with aube. The installed file's git blob hash matches the patch's
-pre-image hash exactly, so the patch should apply cleanly.
+`aube patch-commit` generates a valid patch file, then immediately fails to
+apply it. The patch is clean (correct context, correct hunks), and pnpm applies
+it without issues.
 
 ## Steps to reproduce
 
 ```sh
-pnpm install       # works, patch applies
+# 1. Install without patches
+aube install
+
+# 2. Start patching
+aube patch gifuct-js@2.1.2
+# Edit the temp dir: make gce optional, add lct property
+
+# 3. Commit the patch
+aube patch-commit '<temp-dir>'
+# Writes patches/gifuct-js@2.1.2.patch
+# Then fails: "error applying hunk #1"
+```
+
+Or, using the pre-generated patch in this repro:
+
+```sh
+pnpm install       # works, applies the patch
 rm -rf node_modules pnpm-lock.yaml
 aube install       # fails: "error applying hunk #1"
 ```
 
-## Verification that the file matches
+## The generated patch
 
-```sh
-# Install without patch to get the original file
-# (temporarily remove patchedDependencies from pnpm-workspace.yaml)
-aube install
-git hash-object node_modules/gifuct-js/index.d.ts
-# fb0b487b4985011a94026807b2586ed838207935
-
-# The patch header says:
-# index fb0b487b4985011a94026807b2586ed838207935..db2d2f91...
-# Pre-image hash matches exactly.
+```diff
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -8,7 +8,7 @@
+ type Frame = {
+-  gce: {
++  gce?: {
+@@ -27,6 +27,7 @@
+       blocks: number[]
+     }
++    lct?: [number, number, number][]
+     descriptor:
 ```
 
-## Expected
-
-Patch applies successfully. The pre-image hash matches, the context lines match,
-the hunks are clean.
-
-## Actual
-
-```
-Error: × prewarm GVS for gifuct-js@2.1.2: failed to apply patch for
-       gifuct-js@2.1.2: failed to apply patch for index.d.ts: error applying hunk #1
-```
+Both hunks are clean. The pre-image matches the installed file exactly
+(verified via `git hash-object`).
 
 ## Versions
 
