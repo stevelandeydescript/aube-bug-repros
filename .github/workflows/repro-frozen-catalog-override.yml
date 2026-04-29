@@ -14,7 +14,7 @@ jobs:
       - name: Install pnpm and aube
         run: |
           npm install -g pnpm@10
-          npm install -g @endevco/aube@1.0.0-beta.12
+          npm install -g @endevco/aube@1.4.0
 
       - name: Generate lockfile with pnpm
         working-directory: frozen-lockfile-catalog-override
