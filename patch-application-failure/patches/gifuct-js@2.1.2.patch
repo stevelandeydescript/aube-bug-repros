@@ -1,0 +1,21 @@
+diff --git a/index.d.ts b/index.d.ts
+index fb0b487b4985011a94026807b2586ed838207935..db2d2f9138fab62340e3acac96cca7a53fa10e66 100644
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -8,7 +8,7 @@ type Application = {
+ }
+ 
+ type Frame = {
+-  gce: {
++  gce?: {
+     byteSize: number
+     codes: number[]
+     delay: number
+@@ -27,6 +27,7 @@ type Frame = {
+       minCodeSize: number
+       blocks: number[]
+     }
++    lct?: [number, number, number][]
+     descriptor: {
+       top: number
+       left: number

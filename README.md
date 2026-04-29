@@ -13,17 +13,15 @@ GitHub Actions workflows compare aube against pnpm for each repro.
 | 3   | `pnpm-lockfile-host-only-platforms/` | beta.10  | `pnpm-lock.yaml` only contained host platform optional deps |
 | 4   | `filter-skips-root-deps/`            | beta.12  | `--filter` skipped root devDependencies                     |
 | 5   | `frozen-lockfile-catalog-override/`  | 1.1.0    | `--frozen-lockfile` rejected `catalog:` in overrides        |
+| 6   | `workspace-bin-not-linked/`          | 1.4.0    | workspace bins not linked into dependents' `.bin/`          |
+| 7   | `frozen-lockfile-override-specifier/`| 1.4.0    | `--frozen-lockfile` rejected override-rewritten specifiers  |
 
-## Open (as of 1.2.1)
-
-### 6. `workspace-bin-not-linked/` — workspace bins not linked
-
-When workspace package A declares `"bin": {"my-tool": ...}` and package B depends on A via `workspace:*`, pnpm links `my-tool` into `B/node_modules/.bin/`. aube does not.
-
-### 7. `frozen-lockfile-override-specifier/` — overrides not applied before specifier comparison
-
-When an override rewrites a dependency specifier (e.g. `plist@<3.0.5` → `>=3.0.5`), pnpm records the override target in the lockfile and `--frozen-lockfile` accepts it. aube compares the original manifest specifier against the lockfile and fails.
+## Open (as of 1.4.0)
 
 ### 8. `exotic-git-dep-resolution/` — git URL deps blocked by default
 
 `@electron/rebuild` depends on `@electron/node-gyp` via a git URL. aube blocks it with `blockExoticSubdeps` (enabled by default). Workaround: `block-exotic-subdeps=false` in `.npmrc`. The default differs from pnpm, which resolves git deps without extra config.
+
+### 9. `patch-application-failure/` — patch application fails on valid pnpm patch
+
+A pnpm-generated patch for `gifuct-js@2.1.2` applies correctly with pnpm but fails with aube ("error applying hunk #1"). The patch modifies `index.d.ts` to make a property optional and add a new property.

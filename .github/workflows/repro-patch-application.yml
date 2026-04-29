@@ -1,4 +1,4 @@
-name: 'Repro: git URL deps fail to resolve'
+name: "Repro: patch application fails on valid pnpm patch"
 on: [push, workflow_dispatch]
 
 jobs:
@@ -9,18 +9,14 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Install aube
         run: npm install -g @endevco/aube@1.4.0
 
       - name: aube install
-        working-directory: exotic-git-dep-resolution
+        working-directory: patch-application-failure
         run: aube install
-
-      - name: Package should be installed
-        working-directory: exotic-git-dep-resolution
-        run: bash test.sh
 
   pnpm:
     runs-on: ubuntu-latest
@@ -29,15 +25,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Install pnpm
         run: npm install -g pnpm@10
 
       - name: pnpm install
-        working-directory: exotic-git-dep-resolution
+        working-directory: patch-application-failure
         run: pnpm install
-
-      - name: Package should be installed
-        working-directory: exotic-git-dep-resolution
-        run: bash test.sh

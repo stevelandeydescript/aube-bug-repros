@@ -12,7 +12,7 @@ jobs:
           node-version: '22'
 
       - name: Install aube
-        run: npm install -g @endevco/aube@1.2.1
+        run: npm install -g @endevco/aube@1.4.0
 
       - name: aube install
         working-directory: workspace-bin-not-linked
