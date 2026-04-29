@@ -1,0 +1,7 @@
+packages:
+  - packages/*
+catalog:
+  beamcoder: npm:beamcoder-prebuild@0.7.1-rc.18
+allowBuilds:
+  beamcoder: false
+  segfault-handler: false
