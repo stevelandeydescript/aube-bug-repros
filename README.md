@@ -18,6 +18,12 @@ GitHub Actions workflows compare aube against pnpm for each repro.
 | 9   | `patch-application-failure/`          | 1.5.0    | patch fails despite matching pre-image hash                  |
 | 10  | `catalog-npm-alias/`                  | 1.5.0    | `npm:` aliases from catalog not installed from pnpm lockfile |
 
+## Open
+
+| #   | Directory                       | Bug                                                             |
+| --- | ------------------------------- | --------------------------------------------------------------- |
+| 11  | `npm-alias-resolution-failure/` | `npm:` aliases in transitive deps treated as real package names |
+
 ## Expected behavior / config gap
 
 ### 8. `exotic-git-dep-resolution/`

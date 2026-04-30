@@ -1,0 +1,8 @@
+{
+    "name": "@repro/app",
+    "private": true,
+    "version": "1.0.0",
+    "dependencies": {
+        "jackspeak": "4.1.1"
+    }
+}
