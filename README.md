@@ -24,6 +24,7 @@ GitHub Actions workflows compare aube against pnpm for each repro.
 | --- | --------------------------------- | --------------------------------------------------------------- |
 | 11  | `npm-alias-resolution-failure/`   | `npm:` aliases in transitive deps treated as real package names |
 | 12  | `tsgo-declaration-emit-symlinks/` | declaration emit fails with per-package virtual store symlinks  |
+| 13  | `lifecycle-script-wrong-cwd/`     | lifecycle script cwd points to virtual store root, not package  |
 
 ## Expected behavior / config gap
 

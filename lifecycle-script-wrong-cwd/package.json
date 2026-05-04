@@ -1,0 +1,11 @@
+{
+    "name": "lifecycle-script-wrong-cwd",
+    "version": "0.0.0",
+    "private": true,
+    "devDependencies": {
+        "simple-git-hooks": "2.13.1"
+    },
+    "simple-git-hooks": {
+        "pre-commit": "echo 'hook installed'"
+    }
+}
