@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "composite": true,
+        "declaration": true,
+        "declarationMap": true,
+        "outDir": "dist",
+        "rootDir": "src",
+        "strict": true,
+        "skipLibCheck": true,
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "target": "es2022"
+    },
+    "include": ["src"],
+    "references": [{ "path": "../lib" }]
+}

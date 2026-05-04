@@ -20,9 +20,10 @@ GitHub Actions workflows compare aube against pnpm for each repro.
 
 ## Open
 
-| #   | Directory                       | Bug                                                             |
-| --- | ------------------------------- | --------------------------------------------------------------- |
-| 11  | `npm-alias-resolution-failure/` | `npm:` aliases in transitive deps treated as real package names |
+| #   | Directory                         | Bug                                                             |
+| --- | --------------------------------- | --------------------------------------------------------------- |
+| 11  | `npm-alias-resolution-failure/`   | `npm:` aliases in transitive deps treated as real package names |
+| 12  | `tsgo-declaration-emit-symlinks/` | declaration emit fails with per-package virtual store symlinks  |
 
 ## Expected behavior / config gap
 

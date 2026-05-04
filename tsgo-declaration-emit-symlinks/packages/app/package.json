@@ -1,0 +1,9 @@
+{
+    "name": "@repro/app",
+    "version": "1.0.0",
+    "private": true,
+    "dependencies": {
+        "@repro/lib": "workspace:*",
+        "type-fest": "3.13.1"
+    }
+}
